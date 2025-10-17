@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailerPro | Enterprise Retail Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192x192.png">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Professional retail management platform for Airtel distributors">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="RetailerPro">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <div class="logo-icon">RP</div>
+                    <h1>RetailerPro</h1>
+                </div>
+                <p class="login-subtitle">Enterprise Retail Management Platform</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" required 
+                           placeholder="254XXXXXXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userRole">Role</label>
+                    <select id="userRole" name="userRole" required>
+                        <option value="">Select Role</option>
+                        <option value="DSR">Field Sales Representative</option>
+                        <option value="TSM">Territory Sales Manager</option>
+                        <option value="SIBO_AGENCY">SIBO Agency</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="clusterGroup" style="display: none;">
+                    <label for="userCluster">Territory</label>
+                    <select id="userCluster" name="userCluster">
+                        <option value="">Select Territory</option>
+                        <option value="KASARANI">Kasarani</option>
+                        <option value="MWIKI">Mwiki</option>
+                        <option value="ZIMMERMAN">Zimmerman</option>
+                        <option value="GITHURAI">Githurai</option>
+                        <option value="RUAI">Ruai</option>
+                        <option value="KAMULU">Kamulu</option>
+                        <option value="THOME">Thome</option>
+                        <option value="NJIRU">Njiru</option>
+                        <option value="KAHAWA">Kahawa</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="siboPasswordGroup" style="display: none;">
+                    <label for="siboPassword">SIBO Password *</label>
+                    <input type="password" id="siboPassword" name="siboPassword" 
+                           placeholder="Enter SIBO password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span class="btn-text">Access Platform</span>
+                    <span class="btn-loader" style="display: none;">Authenticating...</span>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <div class="demo-credentials">
+                    <h4>Demo Access</h4>
+                    <div class="credential-item">
+                        <strong>Field Rep:</strong> 784478620 | Any Territory
+                    </div>
+                </div>
+                <div class="install-instructions">
+                    <h4>Install App</h4>
+                    <div class="credential-item">
+                        <strong>Android:</strong> Chrome menu → "Add to Home screen"
+                    </div>
+                    <div class="credential-item">
+                        <strong>iPhone:</strong> Safari share → "Add to Home Screen"
+                    </div>
+                    <div class="credential-item">
+                        <strong>Desktop:</strong> Click "Install App" button
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appSection" class="app-container" style="display: none;">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">RP</div>
+                    <div class="logo-text">
+                        <h2>RetailerPro</h2>
+                        <span class="logo-subtitle">Enterprise</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="nav-section">
+                    <h3 class="nav-section-title">CORE</h3>
+                    <div class="nav-items">
+                        <a href="#dashboard" class="nav-item active" data-tab="dashboard-tab">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                        <a href="#retailers" class="nav-item" data-tab="retailers-tab">
+                            <span class="nav-icon">🏪</span>
+                            <span class="nav-text">Retailers</span>
+                        </a>
+                        <a href="#prospects" class="nav-item" data-tab="prospects-tab">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-text">Prospects</span>
+                        </a>
+                        <a href="#recruitment" class="nav-item" data-tab="recruitment-tab">
+                            <span class="nav-icon">✅</span>
+                            <span class="nav-text">Recruitment</span>
+                        </a>
+                        <a href="#servicing" class="nav-item" data-tab="servicing-tab">
+                            <span class="nav-icon">🔄</span>
+                            <span class="nav-text">Servicing Float</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section" id="managementSection" style="display: none;">
+                    <h3 class="nav-section-title">MANAGEMENT</h3>
+                    <div class="nav-items">
+                        <a href="#performance" class="nav-item" data-tab="performance-tab">
+                            <span class="nav-icon">📈</span>
+                            <span class="nav-text">Performance</span>
+                        </a>
+                        <a href="#reports" class="nav-item" data-tab="reports-tab">
+                            <span class="nav-icon">📋</span>
+                            <span class="nav-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <span id="userAvatar">U</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">User</div>
+                        <div class="user-role" id="userRoleBadge">Role</div>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn btn-secondary btn-sm">
+                    <span class="btn-icon">🚪</span>
+                    Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle" class="page-subtitle">Welcome back</p>
+                </div>
+                <div class="header-right">
+                    <div class="header-actions">
+                        <button id="installBtn" class="btn btn-outline" style="display: none;">
+                            <span class="btn-icon">📱</span>
+                            Install App
+                        </button>
+                        <div class="territory-badge" id="territoryBadge" style="display: none;">
+                            <span class="badge-icon">📍</span>
+                            <span id="territoryName">Territory</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="content-wrapper">
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content active">
+                    <div class="dashboard-grid">
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon primary">🏪</div>
+                                <div class="stat-content">
+                                    <h3>Active Retailers</h3>
+                                    <div class="stat-value" id="activeRetailers">0</div>
+                                    <div class="stat-trend positive">+12% this month</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon success">👥</div>
+                                <div class="stat-content">
+                                    <h3>Total Prospects</h3>
+                                    <div class="stat-value" id="totalProspects">0</div>
+                                    <div class="stat-trend positive">+8% this week</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon warning">📈</div>
+                                <div class="stat-content">
+                                    <h3>Conversion Rate</h3>
+                                    <div class="stat-value" id="conversionRate">0%</div>
+                                    <div class="stat-trend positive">+2.5%</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon info">🎯</div>
+                                <div class="stat-content">
+                                    <h3>Target Achievement</h3>
+                                    <div class="stat-value" id="targetAchievement">0%</div>
+                                    <div class="stat-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="actions-section">
+                            <h3>Quick Actions</h3>
+                            <div class="actions-grid">
+                                <button class="action-card" onclick="showTab('retailers-tab')">
+                                    <span class="action-icon">➕</span>
+                                    <span class="action-text">Add Retailer</span>
+                                </button>
+                                <button class="action-card" onclick="showTab('prospects-tab')">
+                                    <span class="action-icon">👥</span>
+                                    <span class="action-text">Add Prospect</span>
+                                </button>
+                                <button class="action-card" onclick="showTab('recruitment-tab')">
+                                    <span class="action-icon">✅</span>
+                                    <span class="action-text">Add Recruitment</span>
+                                </button>
+                                <button class="action-card" onclick="showTab('servicing-tab')">
+                                    <span class="action-icon">🔄</span>
+                                    <span class="action-text">Add Servicing</span>
+                                </button>
+                                <button class="action-card" id="exportDataBtn">
+                                    <span class="action-icon">📤</span>
+                                    <span class="action-text">Export Data</span>
+                                </button>
+                                <button class="action-card" onclick="showTab('reports-tab')">
+                                    <span class="action-icon">📊</span>
+                                    <span class="action-text">View Reports</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="activity-section">
+                            <div class="section-header">
+                                <h3>Recent Activity</h3>
+                                <a href="#" class="view-all">View All</a>
+                            </div>
+                            <div class="activity-list" id="recentActivity">
+                                <!-- Activity items will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Retailers Tab -->
+                <div id="retailers-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Retailer Management</h2>
+                        <button class="btn btn-primary" id="addRetailerBtn">
+                            <span class="btn-icon">➕</span>
+                            Add Retailer
+                        </button>
+                    </div>
+
+                    <!-- Retailer Form -->
+                    <div class="form-section" id="retailerFormSection" style="display: none;">
+                        <form id="retailerForm" class="form-card">
+                            <div class="form-header">
+                                <h3>Retailer Information</h3>
+                                <button type="button" class="btn btn-text" id="cancelRetailerBtn">Cancel</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="msisdn">MSISDN *</label>
+                                    <input type="text" id="msisdn" name="msisdn" required 
+                                           placeholder="Enter retailer phone number">
+                                </div>
+                                <div class="form-group">
+                                    <label for="firstName">First Name *</label>
+                                    <input type="text" id="firstName" name="firstName" required 
+                                           placeholder="Enter first name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name *</label>
+                                    <input type="text" id="lastName" name="lastName" required 
+                                           placeholder="Enter last name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="businessName">Business Name</label>
+                                    <input type="text" id="businessName" name="businessName" 
+                                           placeholder="Enter business name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="siteId">Site ID *</label>
+                                    <select id="siteId" name="siteId" required>
+                                        <option value="">Select Site Location</option>
+                                        <option value="NAIROBI_KAYOLE_JUAKALI">NAIROBI_KAYOLE_JUAKALI</option>
+                                        <option value="NAIROBI_USIU">NAIROBI_USIU</option>
+                                        <option value="NAIROBI_MIREMA_TREAT">NAIROBI_MIREMA_TREAT</option>
+                                        <option value="NAIROBI_KASARANI_SPORTS_VIEW">NAIROBI_KASARANI_SPORTS_VIEW</option>
+                                        <option value="NAIROBI_ST.FRANCIS_HOSPITAL">NAIROBI_ST.FRANCIS_HOSPITAL</option>
+                                        <option value="NAIROBI_ATHI_MARKET">NAIROBI_ATHI_MARKET</option>
+                                        <option value="NAIROBI_MIREMA_DRIVE">NAIROBI_MIREMA_DRIVE</option>
+                                        <option value="NAIROBI_RUAI_PCEA">NAIROBI_RUAI_PCEA</option>
+                                        <option value="KAMULU">KAMULU</option>
+                                        <option value="NAIROBI_GITHURAI_44">NAIROBI_GITHURAI_44</option>
+                                        <option value="NAIROBI_ZIMMERMAN_BASE">NAIROBI_ZIMMERMAN_BASE</option>
+                                        <option value="NAIROBI_KASARANI_MWIKI">NAIROBI_KASARANI_MWIKI</option>
+                                        <option value="NAIROBI_MUTHAIGA">NAIROBI_MUTHAIGA</option>
+                                        <option value="NAIROBI_RUAI_MAKONGENI">NAIROBI_RUAI_MAKONGENI</option>
+                                        <option value="NAIROBI_KAHAWA_WEST_ADC">NAIROBI_KAHAWA_WEST_ADC</option>
+                                        <option value="NAIROBI_MWENGENYE_CHEMICHEMI">NAIROBI_MWENGENYE_CHEMICHEMI</option>
+                                        <option value="NAIROBI_ZIMMERMAN_MIREMA_HEIGHTS">NAIROBI_ZIMMERMAN_MIREMA_HEIGHTS</option>
+                                        <option value="NAIROBI_WINDSOR_ESTATE">NAIROBI_WINDSOR_ESTATE</option>
+                                        <option value="NAIROBI_KAYOLE_SAIKA">NAIROBI_KAYOLE_SAIKA</option>
+                                        <option value="NAIROBI_KAHAWA_WEST">NAIROBI_KAHAWA_WEST</option>
+                                        <option value="NAIROBI_KAHAWA_WEST_NEW">NAIROBI_KAHAWA_WEST_NEW</option>
+                                        <option value="NAIROBI_RURII_GITHURAI_44">NAIROBI_RURII_GITHURAI_44</option>
+                                        <option value="NAIROBI_BURUBURU_FARM_NJIRU">NAIROBI_BURUBURU_FARM_NJIRU</option>
+                                        <option value="NAIROBI_KAHAWA_WEST_1">NAIROBI_KAHAWA_WEST_1</option>
+                                        <option value="NAIROBI_GITHURAI_MARKET">NAIROBI_GITHURAI_MARKET</option>
+                                        <option value="NAIROBI_NJIRU">NAIROBI_NJIRU</option>
+                                        <option value="NAIROBI_PAC_UNIVERSITY_ROYSAMBU">NAIROBI_PAC_UNIVERSITY_ROYSAMBU</option>
+                                        <option value="NAIROBI_RED_SOIL_FIFTH_STREET">NAIROBI_RED_SOIL_FIFTH_STREET</option>
+                                        <option value="NAIROBI_DANDORA_CHIEKO">NAIROBI_DANDORA_CHIEKO</option>
+                                        <option value="NAIROBI_SAIKA_MAKONGE">NAIROBI_SAIKA_MAKONGE</option>
+                                        <option value="NAIROBI_LINEKA">NAIROBI_LINEKA</option>
+                                        <option value="NAIROBI_RUAI_STAGE">NAIROBI_RUAI_STAGE</option>
+                                        <option value="NAIROBI_SUNTON_MUGUMOINI">NAIROBI_SUNTON_MUGUMOINI</option>
+                                        <option value="NAIROBI_THOME_MUTHAIGA_NORTH">NAIROBI_THOME_MUTHAIGA_NORTH</option>
+                                        <option value="NAIROBI_MWIKI_SECONDARY">NAIROBI_MWIKI_SECONDARY</option>
+                                        <option value="NAIROBI_NJIRU_CATHOLIC_CHURCH">NAIROBI_NJIRU_CATHOLIC_CHURCH</option>
+                                        <option value="NAIROBI_PENDRO_SEC_SCHOOL_GITHURAI_44">NAIROBI_PENDRO_SEC_SCHOOL_GITHURAI_44</option>
+                                        <option value="NAIROBI_SUNTON_GITUAMBA">NAIROBI_SUNTON_GITUAMBA</option>
+                                        <option value="NAIROBI_ROY_SAMBU_1">NAIROBI_ROY_SAMBU_1</option>
+                                        <option value="NAIROBI_NJIRU_MAJI_MAZURI">NAIROBI_NJIRU_MAJI_MAZURI</option>
+                                        <option value="NAIROBI_RUAI_POLICE_STATION">NAIROBI_RUAI_POLICE_STATION</option>
+                                        <option value="NAIROBI_TUSKER">NAIROBI_TUSKER</option>
+                                        <option value="NAIROBI_ZIMMERMAN">NAIROBI_ZIMMERMAN</option>
+                                        <option value="NAIROBI_MWIKI">NAIROBI_MWIKI</option>
+                                        <option value="NAIROBI_RUAI_SHOPPING_CENTER">NAIROBI_RUAI_SHOPPING_CENTER</option>
+                                        <option value="NAIROBI_RIDGEWAYS_WMX">NAIROBI_RIDGEWAYS_WMX</option>
+                                        <option value="NAIROBI_KIWANJA">NAIROBI_KIWANJA</option>
+                                        <option value="NAIROBI_THIKA_RD_MALL_IBS">NAIROBI_THIKA_RD_MALL_IBS</option>
+                                        <option value="NAIROBI_KU_TEACHING_REFFERAL">NAIROBI_KU_TEACHING_REFFERAL</option>
+                                        <option value="NAIROBI_GARDEN_NEW">NAIROBI_GARDEN_NEW</option>
+                                        <option value="NAIROBI_MWIKI_KASSMATT">NAIROBI_MWIKI_KASSMATT</option>
+                                        <option value="NAIROBI_THIKA_RD_CLAYWORKS">NAIROBI_THIKA_RD_CLAYWORKS</option>
+                                        <option value="NAIROBI_DANDORA_SHILANGA">NAIROBI_DANDORA_SHILANGA</option>
+                                        <option value="NAIROBI_KASARANI_WARREN">NAIROBI_KASARANI_WARREN</option>
+                                        <option value="NAIROBI_SOWETO">NAIROBI_SOWETO</option>
+                                        <option value="NAIROBI_KASARANI_SPORTS_COMPLEX">NAIROBI_KASARANI_SPORTS_COMPLEX</option>
+                                        <option value="NAIROBI_KU_BURUNDI_DRIVE">NAIROBI_KU_BURUNDI_DRIVE</option>
+                                        <option value="NAIROBI_NORTHERN_BYPASS_FOURWAYS">NAIROBI_NORTHERN_BYPASS_FOURWAYS</option>
+                                        <option value="NAIROBI_KAMITI_ROAD">NAIROBI_KAMITI_ROAD</option>
+                                        <option value="NAIROBI_NJIRU_CHOKAA_VIEW">NAIROBI_NJIRU_CHOKAA_VIEW</option>
+                                        <option value="NAIROBI_KAHAWA_WEST_SC">NAIROBI_KAHAWA_WEST_SC</option>
+                                        <option value="NAIROBI_KAMULU_NGUNDU">NAIROBI_KAMULU_NGUNDU</option>
+                                        <option value="NAIROBI_MWIKI_ABERDARES">NAIROBI_MWIKI_ABERDARES</option>
+                                        <option value="NAIROBI_MWIKI_MAJI_MAZURI">NAIROBI_MWIKI_MAJI_MAZURI</option>
+                                        <option value="NAIROBI_ZIMMERMAN_BASE_ATLAS">NAIROBI_ZIMMERMAN_BASE_ATLAS</option>
+                                        <option value="NAIROBI_WATATU_HOUSE">NAIROBI_WATATU_HOUSE</option>
+                                        <option value="NAIROBI_KASARANI_IMPROVEMENT">NAIROBI_KASARANI_IMPROVEMENT</option>
+                                        <option value="NAIROBI_ROYSAMBU_PRIMARY_ATC">NAIROBI_ROYSAMBU_PRIMARY_ATC</option>
+                                        <option value="NAIROBI_NJIRU_QUARRY">NAIROBI_NJIRU_QUARRY</option>
+                                        <option value="NAIROBI_SAFARI_PARK_THIKA_ROAD">NAIROBI_SAFARI_PARK_THIKA_ROAD</option>
+                                        <option value="MUTHAIGA_COUNTRY_CLUB">MUTHAIGA_COUNTRY_CLUB</option>
+                                        <option value="NAIROBI_RUAI_GREEN_SPRING">NAIROBI_RUAI_GREEN_SPRING</option>
+                                        <option value="NAIROBI_CHOKA_ESTATE_ATC">NAIROBI_CHOKA_ESTATE_ATC</option>
+                                        <option value="NAIROBI_NJATHAINI_ROAD">NAIROBI_NJATHAINI_ROAD</option>
+                                        <option value="NAIROBI_JACARANDA_ESTATE_KAMITI">NAIROBI_JACARANDA_ESTATE_KAMITI</option>
+                                        <option value="KAMULU_STAGE_26">KAMULU_STAGE_26</option>
+                                        <option value="NAIROBI_CHOKAA">NAIROBI_CHOKAA</option>
+                                        <option value="NAIROBI_SAIKA">NAIROBI_SAIKA</option>
+                                        <option value="NAIROBI_RIDGEWAYS_NEW">NAIROBI_RIDGEWAYS_NEW</option>
+                                        <option value="NAIROBI_KAHAWA_GARISSON">NAIROBI_KAHAWA_GARISSON</option>
+                                        <option value="NAIROBI_CLAY_CITY">NAIROBI_CLAY_CITY</option>
+                                        <option value="NAIROBI_RUAI_AREA">NAIROBI_RUAI_AREA</option>
+                                        <option value="NAIROBI_NSIS">NAIROBI_NSIS</option>
+                                        <option value="NAIROBI_EASTERN_BYPASS_ONYATTA">NAIROBI_EASTERN_BYPASS_ONYATTA</option>
+                                        <option value="NAIROBI_KU_STAFF_QUARTERS">NAIROBI_KU_STAFF_QUARTERS</option>
+                                        <option value="NAIROBI_MUTHAIGA_COUNTRY_VILLAS">NAIROBI_MUTHAIGA_COUNTRY_VILLAS</option>
+                                        <option value="NAIROBI_KASARANI">NAIROBI_KASARANI</option>
+                                        <option value="NAIROBI_GARDEN_CITY_IBS">NAIROBI_GARDEN_CITY_IBS</option>
+                                        <option value="NAIROBI_KASARANI_HUNTERS">NAIROBI_KASARANI_HUNTERS</option>
+                                        <option value="NAIROBI_RUAI_BONDENI">NAIROBI_RUAI_BONDENI</option>
+                                        <option value="NAIROBI_THOME_SAFARI_PARK">NAIROBI_THOME_SAFARI_PARK</option>
+                                        <option value="NAIROBI_KAHAWA_WEST_SAFCOM">NAIROBI_KAHAWA_WEST_SAFCOM</option>
+                                        <option value="NAIROBI_USIU_SC">NAIROBI_USIU_SC</option>
+                                        <option value="NAIROBI_MURERA_KASARANI">NAIROBI_MURERA_KASARANI</option>
+                                        <option value="NAIROBI_CLARETT_THOME">NAIROBI_CLARETT_THOME</option>
+                                        <option value="NAIROBI_SPORTS_VIEW_KASARANI">NAIROBI_SPORTS_VIEW_KASARANI</option>
+                                        <option value="NAIROBI_KAMULU_KASARANI_TECHNICAL">NAIROBI_KAMULU_KASARANI_TECHNICAL</option>
+                                        <option value="NAIROBI_KENYATTA_UNIVERSITY">NAIROBI_KENYATTA_UNIVERSITY</option>
+                                        <option value="NAIROBI_GARDEN_ESTATE_ROAD">NAIROBI_GARDEN_ESTATE_ROAD</option>
+                                        <option value="NAIROBI_KASARANI_CLAYWORKS">NAIROBI_KASARANI_CLAYWORKS</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Location Name</label>
+                                    <input type="text" id="location" name="location" 
+                                           placeholder="Enter specific location name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lines">Airtel Lines</label>
+                                    <input type="number" id="lines" name="lines" 
+                                           placeholder="Number of active lines" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="visitationDate">Visitation Date *</label>
+                                    <input type="date" id="visitationDate" name="visitationDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visitationTime">Visitation Time *</label>
+                                    <input type="time" id="visitationTime" name="visitationTime" required>
+                                </div>
+                                <div class="form-group dsr-field">
+                                    <label for="serial1">Device Serial 1</label>
+                                    <input type="text" id="serial1" name="serial1" 
+                                           placeholder="Enter device serial number">
+                                </div>
+                                <div class="form-group dsr-field">
+                                    <label for="serial2">Device Serial 2</label>
+                                    <input type="text" id="serial2" name="serial2" 
+                                           placeholder="Enter device serial number">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Services & Programs</label>
+                                    <div class="checkbox-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="ga_lm"> GA LM
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="mtd"> MTD
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="qsso"> QSSO
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="qama"> QAMA
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="kcb_agent"> KCB AGENT
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-icon">💾</span>
+                                    Save Retailer
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clearRetailerForm">
+                                    Clear Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Retailers Table -->
+                    <div class="table-section">
+                        <div class="table-header">
+                            <div class="table-controls">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" id="retailerSearch" placeholder="Search retailers...">
+                                </div>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline" id="exportRetailersBtn">
+                                        <span class="btn-icon">📤</span>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="retailersTable">
+                                <thead>
+                                    <tr>
+                                        <th>MSISDN</th>
+                                        <th>Retailer Name</th>
+                                        <th>Business</th>
+                                        <th>Site ID</th>
+                                        <th>Location</th>
+                                        <th>Active Lines</th>
+                                        <th>Visit Date</th>
+                                        <th>Visit Time</th>
+                                        <th>Services</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Retailers data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prospects Tab -->
+                <div id="prospects-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Prospect Management</h2>
+                        <button class="btn btn-primary" id="addProspectBtn">
+                            <span class="btn-icon">➕</span>
+                            Add Prospect
+                        </button>
+                    </div>
+
+                    <!-- Prospect Form -->
+                    <div class="form-section" id="prospectFormSection" style="display: none;">
+                        <form id="prospectForm" class="form-card">
+                            <div class="form-header">
+                                <h3>Prospect Information</h3>
+                                <button type="button" class="btn btn-text" id="cancelProspectBtn">Cancel</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="prospectPhone">Phone Number *</label>
+                                    <input type="text" id="prospectPhone" name="prospectPhone" required 
+                                           placeholder="Enter prospect phone number">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prospectName">Full Name *</label>
+                                    <input type="text" id="prospectName" name="prospectName" required 
+                                           placeholder="Enter prospect name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prospectBusiness">Business Type</label>
+                                    <select id="prospectBusiness" name="prospectBusiness">
+                                        <option value="">Select business type</option>
+                                        <option value="General Shop">General Shop</option>
+                                        <option value="Supermarket">Supermarket</option>
+                                        <option value="Kiosk">Kiosk</option>
+                                        <option value="Pharmacy">Pharmacy</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prospectLocation">Location *</label>
+                                    <input type="text" id="prospectLocation" name="prospectLocation" required 
+                                           placeholder="Enter business location">
+                                </div>
+                                <div class="form-group">
+                                    <label for="visitDate">Visit Date *</label>
+                                    <input type="date" id="visitDate" name="visitDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="followUpDate">Follow-up Date</label>
+                                    <input type="date" id="followUpDate" name="followUpDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="interestLevel">Interest Level</label>
+                                    <select id="interestLevel" name="interestLevel">
+                                        <option value="High">High</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="prospectNotes">Notes</label>
+                                    <textarea id="prospectNotes" name="prospectNotes" 
+                                              placeholder="Additional notes about the prospect..." 
+                                              rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-icon">💾</span>
+                                    Save Prospect
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clearProspectForm">
+                                    Clear Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Prospects Table -->
+                    <div class="table-section">
+                        <div class="table-header">
+                            <div class="table-controls">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" id="prospectSearch" placeholder="Search prospects...">
+                                </div>
+                                <div class="filter-group">
+                                    <select id="statusFilter">
+                                        <option value="">All Status</option>
+                                        <option value="New">New</option>
+                                        <option value="Contacted">Contacted</option>
+                                        <option value="Follow-up">Follow-up</option>
+                                        <option value="Converted">Converted</option>
+                                    </select>
+                                </div>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline" id="exportProspectsBtn">
+                                        <span class="btn-icon">📤</span>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="prospectsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <th>Name</th>
+                                        <th>Business</th>
+                                        <th>Location</th>
+                                        <th>Interest</th>
+                                        <th>Status</th>
+                                        <th>Next Action</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Prospects data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recruitment Tab -->
+                <div id="recruitment-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Recruitment Status</h2>
+                        <button class="btn btn-primary" id="addRecruitmentBtn">
+                            <span class="btn-icon">➕</span>
+                            Add Recruitment
+                        </button>
+                    </div>
+
+                    <!-- Recruitment Form -->
+                    <div class="form-section" id="recruitmentFormSection" style="display: none;">
+                        <form id="recruitmentForm" class="form-card">
+                            <div class="form-header">
+                                <h3>Recruitment Information</h3>
+                                <button type="button" class="btn btn-text" id="cancelRecruitmentBtn">Cancel</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="recruitmentPhone">Phone Number *</label>
+                                    <input type="text" id="recruitmentPhone" name="recruitmentPhone" required 
+                                           placeholder="Enter phone number">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recruitmentName">Full Name *</label>
+                                    <input type="text" id="recruitmentName" name="recruitmentName" required 
+                                           placeholder="Enter full name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recruitmentBusiness">Business Type</label>
+                                    <select id="recruitmentBusiness" name="recruitmentBusiness">
+                                        <option value="">Select business type</option>
+                                        <option value="General Shop">General Shop</option>
+                                        <option value="Supermarket">Supermarket</option>
+                                        <option value="Kiosk">Kiosk</option>
+                                        <option value="Pharmacy">Pharmacy</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="recruitmentLocation">Location *</label>
+                                    <input type="text" id="recruitmentLocation" name="recruitmentLocation" required 
+                                           placeholder="Enter business location">
+                                </div>
+                                <div class="form-group">
+                                    <label for="recruitmentStatus">Recruitment Status *</label>
+                                    <select id="recruitmentStatus" name="recruitmentStatus" required>
+                                        <option value="Yes">Yes - Recruited</option>
+                                        <option value="No">No - Not Recruited</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Follow-up">Follow-up Required</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="recruitmentDate">Recruitment Date</label>
+                                    <input type="date" id="recruitmentDate" name="recruitmentDate">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="recruitmentNotes">Notes</label>
+                                    <textarea id="recruitmentNotes" name="recruitmentNotes" 
+                                              placeholder="Additional notes about recruitment..." 
+                                              rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-icon">💾</span>
+                                    Save Recruitment
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clearRecruitmentForm">
+                                    Clear Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Recruitment Table -->
+                    <div class="table-section">
+                        <div class="table-header">
+                            <div class="table-controls">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" id="recruitmentSearch" placeholder="Search recruitment...">
+                                </div>
+                                <div class="filter-group">
+                                    <select id="recruitmentStatusFilter">
+                                        <option value="">All Status</option>
+                                        <option value="Yes">Recruited</option>
+                                        <option value="No">Not Recruited</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Follow-up">Follow-up</option>
+                                    </select>
+                                </div>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline" id="exportRecruitmentBtn">
+                                        <span class="btn-icon">📤</span>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="recruitmentTable">
+                                <thead>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <th>Name</th>
+                                        <th>Business</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Recruitment Date</th>
+                                        <th>Added By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Recruitment data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servicing Float Tab -->
+                <div id="servicing-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Servicing Float Management</h2>
+                        <button class="btn btn-primary" id="addServicingBtn">
+                            <span class="btn-icon">➕</span>
+                            Add Servicing
+                        </button>
+                    </div>
+
+                    <!-- Servicing Form -->
+                    <div class="form-section" id="servicingFormSection" style="display: none;">
+                        <form id="servicingForm" class="form-card">
+                            <div class="form-header">
+                                <h3>Servicing Float Information</h3>
+                                <button type="button" class="btn btn-text" id="cancelServicingBtn">Cancel</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="servicingRetailer">Retailer *</label>
+                                    <select id="servicingRetailer" name="servicingRetailer" required>
+                                        <option value="">Select Retailer</option>
+                                        <!-- Retailers will be populated dynamically -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="servicingType">Service Type *</label>
+                                    <select id="servicingType" name="servicingType" required>
+                                        <option value="">Select service type</option>
+                                        <option value="Device Repair">Device Repair</option>
+                                        <option value="SIM Replacement">SIM Replacement</option>
+                                        <option value="Float Top-up">Float Top-up</option>
+                                        <option value="Training">Training</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="servicingAmount">Amount (KES)</label>
+                                    <input type="number" id="servicingAmount" name="servicingAmount" 
+                                           placeholder="Enter amount if applicable">
+                                </div>
+                                <div class="form-group">
+                                    <label for="servicingDate">Service Date *</label>
+                                    <input type="date" id="servicingDate" name="servicingDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="servicingStatus">Status *</label>
+                                    <select id="servicingStatus" name="servicingStatus" required>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Scheduled">Scheduled</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="servicingDescription">Service Description</label>
+                                    <textarea id="servicingDescription" name="servicingDescription" 
+                                              placeholder="Describe the service provided..." 
+                                              rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-icon">💾</span>
+                                    Save Servicing
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clearServicingForm">
+                                    Clear Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Servicing Table -->
+                    <div class="table-section">
+                        <div class="table-header">
+                            <div class="table-controls">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" id="servicingSearch" placeholder="Search servicing...">
+                                </div>
+                                <div class="filter-group">
+                                    <select id="servicingStatusFilter">
+                                        <option value="">All Status</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Scheduled">Scheduled</option>
+                                    </select>
+                                </div>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline" id="exportServicingBtn">
+                                        <span class="btn-icon">📤</span>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="servicingTable">
+                                <thead>
+                                    <tr>
+                                        <th>Retailer</th>
+                                        <th>Service Type</th>
+                                        <th>Amount</th>
+                                        <th>Service Date</th>
+                                        <th>Status</th>
+                                        <th>Description</th>
+                                        <th>Added By</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Servicing data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Tab (TSM/SIBO Only) -->
+                <div id="performance-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Team Performance</h2>
+                        <div class="header-actions">
+                            <select id="timeFilter">
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="quarter">This Quarter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="performanceContent">
+                        <!-- Performance content will be loaded based on user role -->
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div id="reports-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Reports & Analytics</h2>
+                        <button class="btn btn-primary" id="generateReportBtn">
+                            <span class="btn-icon">📊</span>
+                            Generate Report
+                        </button>
+                    </div>
+                    <div id="reportsContent">
+                        <!-- Reports content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
