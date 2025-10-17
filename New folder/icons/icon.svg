@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="RetailerPro icon">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#2b6ef6"/>
+      <stop offset="1" stop-color="#1e40af"/>
+    </linearGradient>
+    <filter id="s" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="8" stdDeviation="18" flood-color="#0b2a66" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Circular mark -->
+  <g filter="url(#s)">
+    <circle cx="256" cy="256" r="220" fill="url(#g)"/>
+  </g>
+
+  <!-- Lettering -->
+  <g transform="translate(0,0)">
+    <text x="50%" y="56%" text-anchor="middle" font-family="Inter, Roboto, system-ui, -apple-system, 'Segoe UI', Arial"
+          font-size="160" font-weight="700" fill="#ffffff" letter-spacing="-4">RP</text>
+  </g>
+
+  <!-- subtle shine -->
+  <path d="M120 120 C200 70, 312 70, 392 120" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="40" stroke-linecap="round"/>
+</svg>
