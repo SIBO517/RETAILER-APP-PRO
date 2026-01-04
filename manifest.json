@@ -1,0 +1,44 @@
+{
+  "name": "DSR Retailer Management",
+  "short_name": "DSR Retailer",
+  "description": "Multi-User Retailer Management System for DSR Teams",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071A2B",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "LOGO/logo-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable" },
+    { "src": "LOGO/logo-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/screenshot1.png", "sizes": "1280x720", "type": "image/png", "description": "Main Dashboard" },
+    { "src": "screenshots/screenshot2.png", "sizes": "1280x720", "type": "image/png", "description": "Data Entry Form" }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Add New Retailer",
+      "short_name": "Add",
+      "description": "Add a new retailer entry",
+      "url": "/?action=new",
+      "icons": [{ "src": "LOGO/add-icon.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "View Reports",
+      "short_name": "Reports",
+      "description": "View analytics and reports",
+      "url": "/?action=reports",
+      "icons": [{ "src": "LOGO/reports-icon.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

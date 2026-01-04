@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSR Retailer Management</title>
+    
+    <!-- PWA Configuration -->
+    <meta name="application-name" content="DSR Retailer">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="DSR Retailer">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#071A2B">
+    <meta name="theme-color" content="#071A2B">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="LOGO/logo.png">
+    <link rel="icon" href="LOGO/logo.png">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        .splash-logo i {
+            font-size: 70px;
+            color: var(--primary);
+        }
+
+        .splash-title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .splash-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+        }
+
+        /* Login Screen */
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 50px auto;
+            display: none;
+        }
+
+        .login-container.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header i {
+            font-size: 50px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .login-header h2 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        /* Dashboard */
+        .dashboard-container {
+            display: none;
+        }
+
+        .dashboard-container.active {
+            display: block;
+        }
+
+        header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--secondary);
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th {
+            background: #f1f5f9;
+            padding: 15px;
+            text-align: left;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Photo Gallery */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        /* Camera */
+        .camera-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        #camera-view {
+            width: 100%;
+            display: block;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .login-container {
+                padding: 25px;
+                margin: 20px auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .splash-title {
+                font-size: 1.8rem;
+            }
+            
+            .splash-logo {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .splash-logo i {
+                font-size: 50px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1d4ed8;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <i class="fas fa-store-alt"></i>
+        </div>
+        <h1 class="splash-title">DSR Retailer Management</h1>
+        <p class="splash-subtitle">Multi-User PWA System</p>
+        <div style="margin-top: 30px; color: white;">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div class="container">
+        <div class="login-container" id="login-screen">
+            <div class="login-header">
+                <i class="fas fa-lock"></i>
+                <h2>DSR Retailer Login</h2>
+                <p>Access your retailer management dashboard</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-key"></i> Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            
+            <div class="form-group">
+                <label for="role"><i class="fas fa-user-tag"></i> Role</label>
+                <select id="role">
+                    <option value="">Select Role</option>
+                    <option value="dsr">DSR</option>
+                    <option value="branding">BRANDING</option>
+                    <option value="sibo">SIBO</option>
+                </select>
+            </div>
+            
+            <div id="dsr-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="full-name"><i class="fas fa-user-circle"></i> Full Name</label>
+                    <input type="text" id="full-name" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Enter phone number">
+                </div>
+                <div class="form-group">
+                    <label for="cluster"><i class="fas fa-map-marker-alt"></i> Cluster</label>
+                    <select id="cluster">
+                        <option value="">Select Cluster</option>
+                        <option value="KASARANI">KASARANI</option>
+                        <option value="MWIKI">MWIKI</option>
+                        <option value="RUI">RUI</option>
+                        <option value="NJIRU">NJIRU</option>
+                        <option value="GITHURAI44">GITHURAI44</option>
+                        <option value="KAHAWA WEST">KAHAWA WEST</option>
+                        <option value="ZIMERMAN">ZIMERMAN</option>
+                        <option value="THOME">THOME</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="login-btn" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="dashboard-container">
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-store-alt"></i>
+                        <span>DSR Retailer Management</span>
+                    </div>
+                    <div class="nav-links">
+                        <a href="#" data-section="dashboard" data-roles="dsr,branding,sibo" class="active">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                        <a href="#" data-section="data-entry" data-roles="dsr,branding">
+                            <i class="fas fa-edit"></i> Data Entry
+                        </a>
+                        <a href="#" data-section="photo-gallery" data-roles="dsr,branding">
+                            <i class="fas fa-images"></i> Gallery
+                        </a>
+                        <a href="#" data-section="analytics" data-roles="sibo">
+                            <i class="fas fa-chart-line"></i> Analytics
+                        </a>
+                        <a href="#" data-section="reports" data-roles="sibo">
+                            <i class="fas fa-file-alt"></i> Reports
+                        </a>
+                        <a href="#" data-section="services" data-roles="sibo">
+                            <i class="fas fa-cogs"></i> Services
+                        </a>
+                        <a href="#" data-section="profile" data-roles="sibo">
+                            <i class="fas fa-user-cog"></i> Settings
+                        </a>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="user-avatar">U</div>
+                        <div>
+                            <div id="user-name">User</div>
+                            <div id="user-role" style="font-size: 0.8rem; color: var(--secondary);">Role</div>
+                        </div>
+                        <button id="logout-btn" class="btn btn-danger btn-sm">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active" data-roles="dsr,branding,sibo">
+                <div class="card">
+                    <h2><i class="fas fa-tachometer-alt"></i> Welcome, <span id="welcome-name">User</span></h2>
+                    <p>Retailer Management Dashboard</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-retailers">0</div>
+                        <div class="stat-label">Total Retailers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="active-retailers">0</div>
+                        <div class="stat-label">Active Retailers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="visits-today">0</div>
+                        <div class="stat-label">Visits Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pending-tasks">0</div>
+                        <div class="stat-label">Pending Tasks</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Retailer</th>
+                                <th>Activity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity-table">
+                            <!-- Filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Data Entry Section -->
+            <div id="data-entry-section" class="section" data-roles="dsr,branding">
+                <div class="card">
+                    <h2><i class="fas fa-edit"></i> Retailer Data Entry</h2>
+                    <form id="retailer-form">
+                        <div class="form-group">
+                            <label for="msisdn"><i class="fas fa-phone-alt"></i> MSISDN</label>
+                            <input type="text" id="msisdn" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="retailer-name"><i class="fas fa-store"></i> Retailer Name</label>
+                            <input type="text" id="retailer-name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="business"><i class="fas fa-briefcase"></i> Business Name</label>
+                            <input type="text" id="business" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="site-id"><i class="fas fa-map-pin"></i> Site ID</label>
+                            <select id="site-id" required>
+                                <option value="">Select Site ID</option>
+                                <!-- Site IDs will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" id="get-location" class="btn btn-primary">
+                                    <i class="fas fa-location-arrow"></i> Get Location
+                                </button>
+                                <input type="text" id="latitude" placeholder="Latitude" readonly style="flex: 1;">
+                                <input type="text" id="longitude" placeholder="Longitude" readonly style="flex: 1;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="visit-date"><i class="fas fa-calendar"></i> Visit Date</label>
+                            <input type="date" id="visit-date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="visit-time"><i class="fas fa-clock"></i> Visit Time</label>
+                            <input type="time" id="visit-time" required>
+                        </div>
+                        
+                        <!-- Services Section -->
+                        <div id="services-section">
+                            <h3><i class="fas fa-concierge-bell"></i> Services</h3>
+                            <div class="form-group">
+                                <label for="fp-shop">FP Shop Name</label>
+                                <select id="fp-shop">
+                                    <option value="">Select FP Shop</option>
+                                    <option value="JENKIB LIMITED">JENKIB LIMITED</option>
+                                    <option value="KARUKA LIMITED">KARUKA LIMITED</option>
+                                    <option value="FAIR FIELD COMMUNICATION VOXCOM">FAIR FIELD COMMUNICATION VOXCOM</option>
+                                    <option value="TWAWEZA">TWAWEZA</option>
+                                    <option value="MASHUP">MASHUP</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="float-amount">Float Serviced Amount</label>
+                                <input type="number" id="float-amount" placeholder="Enter amount">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>SIM Serial Numbers</label>
+                                <div id="sim-container">
+                                    <div class="sim-entry" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <input type="text" placeholder="SIM Serial Number" style="flex: 1;">
+                                        <button type="button" class="btn btn-danger remove-sim">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" id="add-sim" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add SIM
+                                </button>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label for="galm">GALM</label>
+                                    <input type="number" id="galm" placeholder="GALM">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ga-mtd">GA MTD</label>
+                                    <input type="number" id="ga-mtd" placeholder="GA MTD">
+                                </div>
+                            </div>
+                            
+                            <h4>Shop Type</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                                <div class="form-group">
+                                    <label for="qsso">QSSO</label>
+                                    <select id="qsso">
+                                        <option value="">Select</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="qama">QAMA</label>
+                                    <select id="qama">
+                                        <option value="">Select</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="kcb-agent">KCB Agent</label>
+                                    <select id="kcb-agent">
+                                        <option value="">Select</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Photo Capture -->
+                        <div class="form-group">
+                            <label><i class="fas fa-camera"></i> Retailer Photo</label>
+                            <div class="camera-container" id="camera-container">
+                                <video id="camera-view" style="display: none;"></video>
+                                <canvas id="photo-canvas" style="display: none;"></canvas>
+                                <img id="photo-preview" class="photo-preview" style="display: none; width: 100%;">
+                                <div id="camera-placeholder" style="text-align: center; padding: 40px; background: #f1f5f9; border-radius: 10px;">
+                                    <i class="fas fa-camera fa-3x" style="color: var(--gray); margin-bottom: 15px;"></i>
+                                    <p>Click "Start Camera" to capture retailer photo</p>
+                                </div>
+                            </div>
+                            <div class="camera-controls">
+                                <button type="button" id="start-camera" class="btn btn-primary">
+                                    <i class="fas fa-camera"></i> Start Camera
+                                </button>
+                                <button type="button" id="capture-photo" class="btn btn-success" style="display: none;">
+                                    <i class="fas fa-camera-retro"></i> Capture
+                                </button>
+                                <button type="button" id="retake-photo" class="btn btn-warning" style="display: none;">
+                                    <i class="fas fa-redo"></i> Retake
+                                </button>
+                            </div>
+                            <input type="hidden" id="photo-data">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status"><i class="fas fa-info-circle"></i> Status</label>
+                            <select id="status" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="prospect">Prospect</option>
+                                <option value="recruitment">Recruitment</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success" style="width: 100%;">
+                            <i class="fas fa-save"></i> Save Retailer Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Photo Gallery Section -->
+            <div id="photo-gallery-section" class="section" data-roles="dsr,branding">
+                <div class="card">
+                    <h2><i class="fas fa-images"></i> Photo Gallery</h2>
+                    <div class="photo-gallery" id="gallery-grid">
+                        <!-- Photos will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="section" data-roles="sibo">
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> SIBO Analytics Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-visits">0</div>
+                            <div class="stat-label">Total Visits</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avg-visit-duration">0m</div>
+                            <div class="stat-label">Avg Visit Duration</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="conversion-rate">0%</div>
+                            <div class="stat-label">Conversion Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="top-cluster">-</div>
+                            <div class="stat-label">Top Cluster</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 25px;">
+                        <h3><i class="fas fa-chart-pie"></i> Retailer Distribution</h3>
+                        <div id="distribution-chart" style="height: 300px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 10px;">
+                            <p style="color: var(--secondary);">Chart visualization area</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports-section" class="section" data-roles="sibo">
+                <div class="card">
+                    <h2><i class="fas fa-file-alt"></i> Reports Generation</h2>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button id="generate-daily" class="btn btn-primary">
+                            <i class="fas fa-calendar-day"></i> Daily Report
+                        </button>
+                        <button id="generate-weekly" class="btn btn-primary">
+                            <i class="fas fa-calendar-week"></i> Weekly Report
+                        </button>
+                        <button id="generate-monthly" class="btn btn-primary">
+                            <i class="fas fa-calendar-alt"></i> Monthly Report
+                        </button>
+                        <button id="export-excel" class="btn btn-success">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                        <button id="export-pdf" class="btn btn-danger">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-filter"></i> Filter Reports</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-group">
+                                <label for="report-cluster">Cluster</label>
+                                <select id="report-cluster">
+                                    <option value="all">All Clusters</option>
+                                    <option value="KASARANI">KASARANI</option>
+                                    <option value="MWIKI">MWIKI</option>
+                                    <option value="RUI">RUI</option>
+                                    <option value="NJIRU">NJIRU</option>
+                                    <option value="GITHURAI44">GITHURAI44</option>
+                                    <option value="KAHAWA WEST">KAHAWA WEST</option>
+                                    <option value="ZIMERMAN">ZIMERMAN</option>
+                                    <option value="THOME">THOME</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-date-from">From Date</label>
+                                <input type="date" id="report-date-from">
+                            </div>
+                            <div class="form-group">
+                                <label for="report-date-to">To Date</label>
+                                <input type="date" id="report-date-to">
+                            </div>
+                            <div class="form-group">
+                                <label for="report-status">Status</label>
+                                <select id="report-status">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="prospect">Prospect</option>
+                                    <option value="recruitment">Recruitment</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="apply-filters" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-table"></i> Report Data</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Retailer</th>
+                                    <th>Cluster</th>
+                                    <th>Status</th>
+                                    <th>Last Visit</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-table">
+                                <!-- Report data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div id="services-section-page" class="section" data-roles="sibo">
+                <div class="card">
+                    <h2><i class="fas fa-cogs"></i> Services Management</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-services">0</div>
+                            <div class="stat-label">Total Services</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="active-services">0</div>
+                            <div class="stat-label">Active Services</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="pending-services">0</div>
+                            <div class="stat-label">Pending Services</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="service-success">0%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 25px;">
+                        <h3><i class="fas fa-tools"></i> Service Requests</h3>
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <button id="new-service" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> New Service Request
+                            </button>
+                            <button id="refresh-services" class="btn btn-warning">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                        
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Service ID</th>
+                                    <th>Retailer</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="services-table">
+                                <!-- Service data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Settings Section -->
+            <div id="profile-section" class="section" data-roles="sibo">
+                <div class="card">
+                    <h2><i class="fas fa-user-cog"></i> User Profile Settings</h2>
+                    <div class="form-group">
+                        <label for="profile-name"><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="profile-name" placeholder="Enter full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-email"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="profile-email" placeholder="Enter email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-phone"><i class="fas fa-phone"></i> Phone</label>
+                        <input type="tel" id="profile-phone" placeholder="Enter phone number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profile-cluster"><i class="fas fa-map-marker-alt"></i> Cluster</label>
+                        <select id="profile-cluster">
+                            <option value="">Select Cluster</option>
+                            <option value="KASARANI">KASARANI</option>
+                            <option value="MWIKI">MWIKI</option>
+                            <option value="RUI">RUI</option>
+                            <option value="NJIRU">NJIRU</option>
+                            <option value="GITHURAI44">GITHURAI44</option>
+                            <option value="KAHAWA WEST">KAHAWA WEST</option>
+                            <option value="ZIMERMAN">ZIMERMAN</option>
+                            <option value="THOME">THOME</option>
+                        </select>
+                    </div>
+                    
+                    <h3><i class="fas fa-key"></i> Change Password</h3>
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" placeholder="Current password">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" placeholder="New password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm new password">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button id="save-profile" class="btn btn-success">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <button id="reset-profile" class="btn btn-warning">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                        <h3><i class="fas fa-bell"></i> Notifications</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="email-notifications" checked>
+                                Email Notifications
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="sms-notifications" checked>
+                                SMS Notifications
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="push-notifications" checked>
+                                Push Notifications
+                            </label>
+                        </div>
+                        
+                        <button id="test-email" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-envelope"></i> Test Email Notification
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Retailer Profile Modal -->
+    <div id="retailer-modal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3><i class="fas fa-store"></i> Retailer Profile</h3>
+                <button id="close-modal" class="btn btn-danger btn-sm">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="retailer-profile-content">
+                <!-- Profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Site IDs array
+        const siteIds = [
+            "NAIROBI_KAYOLE_JUAKALI", "NAIROBI_USIU", "NAIROBI_MIREMA_TREAT", "NAIROBI_KASARANI_SPORTS_VIEW",
+            "NAIROBI_ST.FRANCIS_HOSPITAL", "NAIROBI_ATHI_MARKET", "NAIROBI_MIREMA_DRIVE", "NAIROBI_RUAI_PCEA",
+            "NAIROBI_GITHURAI_44", "NAIROBI_ZIMMERMAN_BASE", "NAIROBI_KASARANI_MWIKI", "NAIROBI_MUTHAIGA",
+            "NAIROBI_RUAI_MAKONGENI", "NAIROBI_KAHAWA_WEST_ADC", "NAIROBI_MWENGENYE_CHEMICHEMI",
+            "NAIROBI_ZIMMERMAN_MIREMA_HEIGHTS", "NAIROBI_WINDSOR_ESTATE", "NAIROBI_KAYOLE_SAIKA",
+            "NAIROBI_KAHAWA_WEST", "NAIROBI_KAHAWA_WEST_NEW", "NAIROBI_RURII_GITHURAI_44",
+            "NAIROBI_BURUBURU_FARM_NJIRU", "NAIROBI_KAHAWA_WEST_1", "NAIROBI_GITHURAI_MARKET",
+            "NAIROBI_NJIRU", "NAIROBI_PAC_UNIVERSITY_ROYSAMBU", "NAIROBI_RED_SOIL_FIFTH_STREET",
+            "NAIROBI_DANDORA_CHIEKO", "NAIROBI_SAIKA_MAKONGE", "NAIROBI_LINEKA", "NAIROBI_RUAI_STAGE",
+            "NAIROBI_SUNTON_MUGUMOINI", "NAIROBI_THOME_MUTHAIGA_NORTH", "NAIROBI_MWIKI_SECONDARY",
+            "NAIROBI_NJIRU_CATHOLIC_CHURCH", "NAIROBI_PENDRO_SEC_SCHOOL_GITHURAI_44", "NAIROBI_SUNTON_GITUAMBA",
+            "NAIROBI_ROY_SAMBU_1", "NAIROBI_NJIRU_MAJI_MAZURI", "NAIROBI_RUAI_POLICE_STATION",
+            "NAIROBI_TUSKER", "NAIROBI_ZIMMERMAN", "NAIROBI_MWIKI", "NAIROBI_RUAI_SHOPPING_CENTER",
+            "NAIROBI_RIDGEWAYS_WMX", "NAIROBI_KIWANJA", "NAIROBI_THIKA_RD_MALL_IBS", "NAIROBI_KU_TEACHING_REFFERAL",
+            "NAIROBI_GARDEN_NEW", "NAIROBI_MWIKI_KASSMATT", "NAIROBI_THIKA_RD_CLAYWORKS", "NAIROBI_DANDORA_SHILANGA",
+            "NAIROBI_KASARANI_WARREN", "NAIROBI_SOWETO", "NAIROBI_KASARANI_SPORTS_COMPLEX", "NAIROBI_KU_BURUNDI_DRIVE",
+            "NAIROBI_NORTHERN_BYPASS_FOURWAYS", "NAIROBI_KAMITI_ROAD", "NAIROBI_NJIRU_CHOKAA_VIEW",
+            "NAIROBI_KAHAWA_WEST_SC", "NAIROBI_KAMULU_NGUNDU", "NAIROBI_MWIKI_ABERDARES", "NAIROBI_MWIKI_MAJI_MAZURI",
+            "NAIROBI_ZIMMERMAN_BASE_ATLAS", "NAIROBI_WATATU_HOUSE", "NAIROBI_KASARANI_IMPROVEMENT",
+            "NAIROBI_ROYSAMBU_PRIMARY_ATC", "NAIROBI_NJIRU_QUARRY", "NAIROBI_SAFARI_PARK_THIKA_ROAD",
+            "NAIROBI_RUAI_GREEN_SPRING", "NAIROBI_CHOKA_ESTATE_ATC", "NAIROBI_NJATHAINI_ROAD",
+            "NAIROBI_JACARANDA_ESTATE_KAMITI", "NAIROBI_CHOKAA", "NAIROBI_SAIKA", "NAIROBI_RIDGEWAYS_NEW",
+            "NAIROBI_KAHAWA_GARISSON", "NAIROBI_CLAY_CITY", "NAIROBI_RUAI_AREA", "NAIROBI_NSIS",
+            "NAIROBI_EASTERN_BYPASS_ONYATTA", "NAIROBI_KU_STAFF_QUARTERS", "NAIROBI_MUTHAIGA_COUNTRY_VILLAS",
+            "NAIROBI_KASARANI", "NAIROBI_GARDEN_CITY_IBS", "NAIROBI_KASARANI_HUNTERS", "NAIROBI_RUAI_BONDENI",
+            "NAIROBI_THOME_SAFARI_PARK", "NAIROBI_KAHAWA_WEST_SAFCOM", "NAIROBI_USIU_SC", "NAIROBI_MURERA_KASARANI",
+            "NAIROBI_CLARETT_THOME", "NAIROBI_SPORTS_VIEW_KASARANI", "NAIROBI_KAMULU_KASARANI_TECHNICAL",
+            "NAIROBI_KENYATTA_UNIVERSITY", "NAIROBI_GARDEN_ESTATE_ROAD", "NAIROBI_KASARANI_CLAYWORKS",
+            "KAMULU", "KAMULU_STAGE_26", "MUTHAIGA_COUNTRY_CLUB"
+        ];
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyReplaceWithYours",
+            authDomain: "dsr-retailer.firebaseapp.com",
+            databaseURL: "https://dsr-retailer-default-rtdb.firebaseio.com",
+            projectId: "dsr-retailer",
+            storageBucket: "dsr-retailer.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abc123def456"
+        };
+
+        // Initialize Firebase (safe fallback if Firebase isn't available)
+        let database = null;
+        let auth = null;
+        try {
+            if (window.firebase && firebase.initializeApp) {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                auth = firebase.auth();
+            } else {
+                console.warn('Firebase not available, using local fallback.');
+                // Minimal local fallback for database.push().set(...) used by the app
+                database = {
+                    ref: (path) => ({
+                        push: () => {
+                            const key = 'local_' + Date.now();
+                            return {
+                                key,
+                                set: async (data) => {
+                                    const saved = JSON.parse(localStorage.getItem('retailers') || '[]');
+                                    saved.push({ id: key, ...data });
+                                    localStorage.setItem('retailers', JSON.stringify(saved));
+                                    return Promise.resolve();
+                                }
+                            };
+                        }
+                    })
+                };
+                auth = {};
+            }
+        } catch (err) {
+            console.warn('Error initializing Firebase, using fallback:', err);
+            database = {
+                ref: (path) => ({
+                    push: () => {
+                        const key = 'local_' + Date.now();
+                        return {
+                            key,
+                            set: async (data) => {
+                                const saved = JSON.parse(localStorage.getItem('retailers') || '[]');
+                                saved.push({ id: key, ...data });
+                                localStorage.setItem('retailers', JSON.stringify(saved));
+                                return Promise.resolve();
+                            }
+                        };
+                    }
+                })
+            };
+            auth = {};
+        }
+
+        // Current user data
+        let currentUser = null;
+        let userData = null;
+
+        // DOM Elements
+        const splashScreen = document.getElementById('splash-screen');
+        const loginScreen = document.getElementById('login-screen');
+        const dashboard = document.getElementById('dashboard');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const roleSelect = document.getElementById('role');
+        const loginBtn = document.getElementById('login-btn');
+        const dsrFields = document.getElementById('dsr-fields');
+        const logoutBtn = document.getElementById('logout-btn');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const sections = document.querySelectorAll('.section');
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const userRole = document.getElementById('user-role');
+        const welcomeName = document.getElementById('welcome-name');
+
+        // Site ID dropdown
+        const siteIdSelect = document.getElementById('site-id');
+
+        // Camera elements
+        const cameraView = document.getElementById('camera-view');
+        const photoCanvas = document.getElementById('photo-canvas');
+        const photoPreview = document.getElementById('photo-preview');
+        const startCameraBtn = document.getElementById('start-camera');
+        const capturePhotoBtn = document.getElementById('capture-photo');
+        const retakePhotoBtn = document.getElementById('retake-photo');
+        const photoData = document.getElementById('photo-data');
+        let stream = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide splash screen after 2 seconds
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    loginScreen.classList.add('active');
+                }, 500);
+            }, 2000);
+
+            // Populate Site IDs
+            siteIds.forEach(siteId => {
+                const option = document.createElement('option');
+                option.value = siteId;
+                option.textContent = siteId;
+                siteIdSelect.appendChild(option);
+            });
+
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('visit-date').value = today;
+            document.getElementById('visit-date').min = today;
+
+            // Set current time
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0].substring(0, 5);
+            document.getElementById('visit-time').value = timeString;
+
+            // Event Listeners
+            roleSelect.addEventListener('change', toggleDsrFields);
+            loginBtn.addEventListener('click', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection(link.dataset.section);
+                });
+            });
+
+            // Apply default access immediately to avoid UI flash
+            adjustAccessByRole();
+
+            // Form submission
+            document.getElementById('retailer-form').addEventListener('submit', handleRetailerSubmit);
+
+            // Camera controls
+            startCameraBtn.addEventListener('click', startCamera);
+            capturePhotoBtn.addEventListener('click', capturePhoto);
+            retakePhotoBtn.addEventListener('click', retakePhoto);
+
+            // Get location button
+            document.getElementById('get-location').addEventListener('click', getLocation);
+
+            // Add SIM button
+            document.getElementById('add-sim').addEventListener('click', addSimField);
+
+            // Check if user is already logged in
+            checkAuthState();
+        });
+
+        // Toggle DSR fields based on role
+        function toggleDsrFields() {
+            if (roleSelect.value === 'dsr') {
+                dsrFields.style.display = 'block';
+            } else {
+                dsrFields.style.display = 'none';
+            }
+        }
+
+        // Handle login
+        async function handleLogin() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const role = roleSelect.value;
+            const fullName = document.getElementById('full-name')?.value.trim();
+            const phone = document.getElementById('phone')?.value.trim();
+            const cluster = document.getElementById('cluster')?.value;
+
+            // Validate credentials based on role
+            let isValid = false;
+            
+            switch(role) {
+                case 'dsr':
+                    if (username && password === 'DSR@26') {
+                        isValid = true;
+                        userData = {
+                            username,
+                            fullName,
+                            phone,
+                            cluster,
+                            role
+                        };
+                    }
+                    break;
+                case 'branding':
+                    if (username && password === 'DSR@26') {
+                        isValid = true;
+                        userData = { username, role };
+                    }
+                    break;
+                case 'sibo':
+                    if (username === 'SIBOAGENCY' && password === 'Sibo@26') {
+                        isValid = true;
+                        userData = { username, role: 'sibo' };
+                    }
+                    break;
+            }
+
+            if (!isValid) {
+                alert('Invalid credentials! Please check your username and password.');
+                return;
+            }
+
+            // Simulate Firebase authentication
+            currentUser = {
+                uid: Date.now().toString(),
+                email: `${username}@dsr.com`,
+                displayName: fullName || username
+            };
+
+            // Save user data to localStorage
+            localStorage.setItem('dsr_user', JSON.stringify(userData));
+            localStorage.setItem('dsr_auth', 'true');
+
+            // Show dashboard
+            loginScreen.classList.remove('active');
+            dashboard.classList.add('active');
+
+            // Update UI
+            updateUserUI();
+            // Apply role-based UI changes
+            adjustAccessByRole();
+
+            // Initialize dashboard data
+            initializeDashboard();
+
+            // Send email notification
+            sendLoginNotification();
+        }
+
+        // Update user interface
+        function updateUserUI() {
+            if (userData) {
+                userName.textContent = userData.fullName || userData.username;
+                userRole.textContent = userData.role.toUpperCase();
+                welcomeName.textContent = userData.fullName || userData.username;
+                
+                // Set avatar initials
+                const initials = userData.fullName 
+                    ? userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+                    : userData.username.substring(0, 2).toUpperCase();
+                userAvatar.textContent = initials;
+            }
+        }
+
+        // Allowed sections per role
+        function getAllowedSections(role) {
+            const map = {
+                dsr: ['dashboard', 'data-entry', 'photo-gallery'],
+                branding: ['dashboard', 'data-entry', 'photo-gallery'], // data-entry limited to photo capture only
+                sibo: ['dashboard', 'analytics', 'reports', 'profile', 'services']
+            };
+            return map[role] || ['dashboard'];
+        }
+
+        // Helper: check if role allowed for a comma-separated list like "dsr,sibo"
+        function isRoleAllowed(roleList, role) {
+            if (!roleList) return true;
+            if (!role) return false;
+            const allowed = roleList.split(',').map(r => r.trim().toLowerCase());
+            return allowed.includes(role.toLowerCase());
+        }
+
+        // Adjust UI & permissions based on role (updated)
+        function adjustAccessByRole() {
+            const role = userData?.role || null;
+
+            // Nav links & sections visibility based on data-roles attribute
+            navLinks.forEach(link => {
+                const allowed = isRoleAllowed(link.dataset.roles, role);
+                if (!allowed) {
+                    link.classList.add('hidden');
+                } else {
+                    link.classList.remove('hidden');
+                }
+            });
+
+            sections.forEach(section => {
+                const allowed = isRoleAllowed(section.dataset.roles, role);
+                if (!allowed) {
+                    section.classList.add('hidden');
+                } else {
+                    section.classList.remove('hidden');
+                }
+            });
+
+            // Data entry form adjustments for branding (photo-only)
+            const retailerForm = document.getElementById('retailer-form');
+            const submitBtn = retailerForm.querySelector('button[type="submit"]');
+            if (role === 'branding') {
+                // Disable all inputs except camera controls
+                Array.from(retailerForm.querySelectorAll('input, select, textarea')).forEach(el => {
+                    if (['start-camera','capture-photo','retake-photo','photo-data','photo-preview','camera-view','photo-canvas'].includes(el.id)) return;
+                    el.disabled = true;
+                });
+                // hide save button for branding
+                if (submitBtn) submitBtn.style.display = 'none';
+            } else if (role === 'dsr') {
+                // full access for DSR
+                Array.from(retailerForm.querySelectorAll('input, select, textarea')).forEach(el => el.disabled = false);
+                if (submitBtn) submitBtn.style.display = 'block';
+            } else if (role === 'sibo') {
+                // SIBO: ensure data-entry is not visible
+                document.querySelectorAll('[data-section="data-entry"]').forEach(a => a.classList.add('hidden'));
+                const dataEntry = document.getElementById('data-entry-section');
+                if (dataEntry) dataEntry.classList.add('hidden');
+            }
+
+            // If the current active section is hidden / not allowed, fallback to dashboard
+            const activeSection = Array.from(sections).find(s => s.classList.contains('active'));
+            if (activeSection && activeSection.classList.contains('hidden')) {
+                showSection('dashboard');
+            }
+        }
+
+        // Enforce permission check when navigating (updated)
+        function showSection(sectionId) {
+            // Prevent navigating to sections the current role cannot access
+            const navLink = document.querySelector(`.nav-links a[data-section="${sectionId}"]`);
+            if (navLink && navLink.classList.contains('hidden')) {
+                showToast('You do not have access to that section', 'warning');
+                return;
+            }
+
+            // Find the section element
+            const sectionEl = document.getElementById(`${sectionId}-section`);
+            const role = userData?.role || null;
+
+            // If section exists and is not allowed, prevent navigation
+            if (sectionEl && sectionEl.dataset.roles && !isRoleAllowed(sectionEl.dataset.roles, role)) {
+                showToast('You do not have access to that section', 'warning');
+                sectionId = 'dashboard';
+            }
+
+            // Update active nav link
+            navLinks.forEach(link => {
+                if (link.dataset.section === sectionId && !link.classList.contains('hidden')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Show selected section and hide others
+            sections.forEach(section => {
+                if (section.id === `${sectionId}-section` && !section.classList.contains('hidden')) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sendLogoutNotification();
+                localStorage.removeItem('dsr_user');
+                localStorage.removeItem('dsr_auth');
+                currentUser = null;
+                userData = null;
+
+                // reset UI
+                dashboard.classList.remove('active');
+                loginScreen.classList.add('active');
+                usernameInput.value = '';
+                passwordInput.value = '';
+                roleSelect.value = '';
+                dsrFields.style.display = 'none';
+
+                // apply default access (only show dashboard)
+                adjustAccessByRole();
+            }
+        }
+
+        // Check authentication state
+        function checkAuthState() {
+            const isAuthenticated = localStorage.getItem('dsr_auth');
+            const savedUser = localStorage.getItem('dsr_user');
+            
+            if (isAuthenticated && savedUser) {
+                userData = JSON.parse(savedUser);
+                // normalize role casing
+                if (userData.role) userData.role = userData.role.toLowerCase();
+                currentUser = {
+                    uid: 'saved_user',
+                    email: `${userData.username}@dsr.com`,
+                    displayName: userData.fullName || userData.username
+                };
+                
+                loginScreen.classList.remove('active');
+                dashboard.classList.add('active');
+                updateUserUI();
+                adjustAccessByRole();
+                initializeDashboard();
+            }
+        }
+
+        // Initialize dashboard data
+        function initializeDashboard() {
+            // Load recent activity
+            loadRecentActivity();
+            
+            // Load stats
+            updateDashboardStats();
+            
+            // Load gallery if needed
+            // Branding & DSR can access gallery/camera; load as needed
+            if (userData?.role === 'branding' || userData?.role === 'dsr' || userData?.role === 'branding') {
+                loadPhotoGallery();
+            }
+        }
+
+        // Load recent activity
+        function loadRecentActivity() {
+            const activityTable = document.getElementById('activity-table');
+            // Simulate loading data
+            const activities = [
+                { time: '10:30 AM', retailer: 'ABC Store', activity: 'Data Entry', status: 'Completed' },
+                { time: '09:15 AM', retailer: 'XYZ Shop', activity: 'Photo Upload', status: 'Pending' },
+                { time: 'Yesterday', retailer: 'QRS Retail', activity: 'Service Update', status: 'Completed' }
+            ];
+            
+            activityTable.innerHTML = '';
+            activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.time}</td>
+                    <td>${activity.retailer}</td>
+                    <td>${activity.activity}</td>
+                    <td><span class="status-badge ${activity.status.toLowerCase()}">${activity.status}</span></td>
+                `;
+                activityTable.appendChild(row);
+            });
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            // Simulate data
+            document.getElementById('total-retailers').textContent = '124';
+            document.getElementById('active-retailers').textContent = '89';
+            document.getElementById('visits-today').textContent = '12';
+            document.getElementById('pending-tasks').textContent = '5';
+        }
+
+        // Handle retailer form submission
+        async function handleRetailerSubmit(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const retailerData = {
+                msisdn: document.getElementById('msisdn').value,
+                retailerName: document.getElementById('retailer-name').value,
+                business: document.getElementById('business').value,
+                siteId: document.getElementById('site-id').value,
+                latitude: document.getElementById('latitude').value,
+                longitude: document.getElementById('longitude').value,
+                visitDate: document.getElementById('visit-date').value,
+                visitTime: document.getElementById('visit-time').value,
+                fpShop: document.getElementById('fp-shop').value,
+                floatAmount: document.getElementById('float-amount').value,
+                simNumbers: Array.from(document.querySelectorAll('.sim-entry input')).map(input => input.value),
+                galm: document.getElementById('galm').value,
+                gaMtd: document.getElementById('ga-mtd').value,
+                qsso: document.getElementById('qsso').value,
+                qama: document.getElementById('qama').value,
+                kcbAgent: document.getElementById('kcb-agent').value,
+                photo: photoData.value,
+                status: document.getElementById('status').value,
+                dsrName: userData.fullName || userData.username,
+                dsrCluster: userData.cluster,
+                timestamp: Date.now(),
+                submittedAt: new Date().toISOString()
+            };
+
+            // Validate required fields
+            if (!retailerData.msisdn || !retailerData.retailerName || !retailerData.business || !retailerData.siteId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Save to Firebase
+            try {
+                const retailerRef = database.ref('retailers').push();
+                await retailerRef.set(retailerData);
+                
+                // Save to localStorage as backup
+                const savedRetailers = JSON.parse(localStorage.getItem('retailers') || '[]');
+                savedRetailers.push({ id: retailerRef.key, ...retailerData });
+                localStorage.setItem('retailers', JSON.stringify(savedRetailers));
+                
+                // Send email notification
+                sendRetailerNotification(retailerData);
+                
+                // Show success message
+                alert('Retailer data saved successfully!');
+                
+                // Reset form
+                e.target.reset();
+                photoData.value = '';
+                photoPreview.style.display = 'none';
+                document.getElementById('camera-placeholder').style.display = 'block';
+                
+                // Update dashboard
+                updateDashboardStats();
+                loadRecentActivity();
+                
+            } catch (error) {
+                console.error('Error saving retailer:', error);
+                alert('Error saving data. Please try again.');
+            }
+        }
+
+        // Get current location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                    },
+                    (error) => {
+                        alert('Unable to get location. Please enable location services.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+
+        // Add SIM field
+        function addSimField() {
+            const simContainer = document.getElementById('sim-container');
+            const simEntry = document.createElement('div');
+            simEntry.className = 'sim-entry';
+            simEntry.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px;';
+            simEntry.innerHTML = `
+                <input type="text" placeholder="SIM Serial Number" style="flex: 1;">
+                <button type="button" class="btn btn-danger remove-sim">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            simContainer.appendChild(simEntry);
+            
+            // Add event listener to remove button
+            simEntry.querySelector('.remove-sim').addEventListener('click', () => {
+                simEntry.remove();
+            });
+        }
+
+        // Camera functions
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' },
+                    audio: false
+                });
+                
+                cameraView.srcObject = stream;
+                cameraView.style.display = 'block';
+                document.getElementById('camera-placeholder').style.display = 'none';
+                startCameraBtn.style.display = 'none';
+                capturePhotoBtn.style.display = 'inline-flex';
+                retakePhotoBtn.style.display = 'inline-flex';
+                
+            } catch (error) {
+                console.error('Camera error:', error);
+                alert('Unable to access camera. Please check permissions.');
+            }
+        }
+
+        function capturePhoto() {
+            const context = photoCanvas.getContext('2d');
+            photoCanvas.width = cameraView.videoWidth;
+            photoCanvas.height = cameraView.videoHeight;
+            context.drawImage(cameraView, 0, 0, photoCanvas.width, photoCanvas.height);
+            
+            // Convert to data URL
+            const dataUrl = photoCanvas.toDataURL('image/jpeg', 0.8);
+            photoData.value = dataUrl;
+            
+            // Show preview
+            photoPreview.src = dataUrl;
+            photoPreview.style.display = 'block';
+            cameraView.style.display = 'none';
+            
+            // Stop camera stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function retakePhoto() {
+            photoPreview.style.display = 'none';
+            cameraView.style.display = 'block';
+            photoData.value = '';
+            startCamera();
+        }
+
+        // Load photo gallery
+        function loadPhotoGallery() {
+            const galleryGrid = document.getElementById('gallery-grid');
+            // Simulate loading photos
+            const photos = Array(12).fill().map((_, i) => ({
+                id: i + 1,
+                url: `https://picsum.photos/200/150?random=${i}`,
+                caption: `Retailer ${i + 1}`
+            }));
+            
+            galleryGrid.innerHTML = '';
+            photos.forEach(photo => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `
+                    <img src="${photo.url}" alt="${photo.caption}">
+                    <div style="padding: 10px; background: white;">
+                        <p style="margin: 0; font-size: 0.9rem;">${photo.caption}</p>
+                    </div>
+                `;
+                galleryGrid.appendChild(item);
+            });
+        }
+
+        // Email notification functions
+        function sendLoginNotification() {
+            const emailData = {
+                to: 'sbmsalesmarketingco@gmail.com',
+                subject: 'DSR Login Notification',
+                body: `User ${userData.username} (${userData.role}) logged in at ${new Date().toLocaleString()}`
+            };
+            sendEmail(emailData);
+        }
+
+        function sendLogoutNotification() {
+            const emailData = {
+                to: 'sbmsalesmarketingco@gmail.com',
+                subject: 'DSR Logout Notification',
+                body: `User ${userData.username} (${userData.role}) logged out at ${new Date().toLocaleString()}`
+            };
+            sendEmail(emailData);
+        }
+
+        function sendRetailerNotification(retailerData) {
+            const emailData = {
+                to: 'sbmsalesmarketingco@gmail.com',
+                subject: 'New Retailer Data Entry',
+                body: `
+                    New retailer data submitted by ${userData.username}
+                    
+                    Retailer: ${retailerData.retailerName}
+                    MSISDN: ${retailerData.msisdn}
+                    Site ID: ${retailerData.siteId}
+                    Status: ${retailerData.status}
+                    Submitted: ${new Date().toLocaleString()}
+                `
+            };
+            sendEmail(emailData);
+        }
+
+        function sendEmail(emailData) {
+            // In a real app, you would use a backend service to send emails
+            // For now, we'll log to console
+            console.log('Email would be sent:', emailData);
+            
+            // You can implement email sending using:
+            // 1. EmailJS (client-side)
+            // 2. Firebase Cloud Functions with Nodemailer
+            // 3. Your own backend API
+            
+            // Example using EmailJS (you would need to set up EmailJS account)
+            /*
+            if (typeof emailjs !== 'undefined') {
+                emailjs.send('your_service_id', 'your_template_id', emailData)
+                    .then(response => console.log('Email sent:', response))
+                    .catch(error => console.error('Email error:', error));
+            }
+            */
+        }
+
+        // Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').then(
+                    registration => {
+                        console.log('ServiceWorker registered:', registration);
+                    },
+                    error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    }
+                );
+            });
+        }
+
+        // Install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            const installBtn = document.createElement('button');
+            installBtn.textContent = 'Install App';
+            installBtn.className = 'btn btn-primary';
+            installBtn.style.position = 'fixed';
+            installBtn.style.bottom = '20px';
+            installBtn.style.right = '20px';
+            installBtn.style.zIndex = '1000';
+            installBtn.onclick = () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted install');
+                    }
+                    deferredPrompt = null;
+                });
+            };
+            document.body.appendChild(installBtn);
+        });
+
+        // Offline detection
+        window.addEventListener('online', () => {
+            console.log('App is online');
+            showToast('Back online', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('App is offline');
+            showToast('You are offline. Data will be synced when online.', 'warning');
+        });
+
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? 'var(--success)' : 'var(--warning)'};
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+               }
+
+        // Add status badge styling
+        const style = document.createElement('style');
+        style.textContent = `
+            .status-badge {
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+            .status-badge.completed {
+                background: #d1fae5;
+                color: #065f46;
+            }
+            .status-badge.pending {
+                background: #fef3c7;
+                color: #92400e;
+            }
+       
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
